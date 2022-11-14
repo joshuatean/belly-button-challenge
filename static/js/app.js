@@ -19,13 +19,14 @@ function drawcharts(i)  {
         let meta = data.metadata;
         let samples = data.samples;
         let result = samples.filter(row => row.id == i);
-        let metainfo = meta.filter(row => row.id == i)[0];
+        let metainfo = meta.filter(row => row.id == i);
         let values = result[0].sample_values;
         let ids = result[0].otu_ids;
-        let labels = result[0].otu_labels;
-        let labelsslicedreversed = labels.slice(0, 10).reverse();
+        let otulabels = result[0].otu_labels;
+        let labelsslicedreversed = otulabels.slice(0, 10).reverse();
         let slicedreversed = values.slice(0, 10).reverse();
         let idscleaned = ids.slice(0, 10).reverse();
+        let washedcount = metainfo[0].wfreq;
 
         let bars = [{
                 x: slicedreversed,
@@ -48,7 +49,7 @@ function drawcharts(i)  {
         let bubbles = [{
                 x: ids,
                 y: values,
-                text: labels,
+                text: otulabels,
                 mode: "markers",
                 marker: {
                     size: values,
@@ -58,9 +59,37 @@ function drawcharts(i)  {
 
         let bubs_layout = {
             title: "Bubble Chart on Microbial Species in Belly Buttons",
+            xaxis: {title: "OTU ID"},
             showlegend: false,
         };
         Plotly.newPlot("bubble", bubbles, bubs_layout);
+
+        let gauges = [{
+            domain: { x: [0, 1], y: [0, 1]},
+            type: "indicator",
+            mode: "gauge+number",
+            value: washedcount,
+            labels: ["0-1","1-2","2-3","3-4","4-5","5-6","6-7","7-8","8-9"],
+            gauge: {
+                axis: {range: [null, 9]},
+                bar: {color: "black"},
+                steps: [
+                    {range: [0,1], color: "#f7f2ec"},
+                    {range: [1,2], color: "#f3f0e5"},
+                    {range: [2,3], color: "#e9e7c9"},
+                    {range: [3,4], color: "#e5e9b1"},
+                    {range: [4,5], color: "#d5e595"},
+                    {range: [5,6], color: "#b7cd8b"},
+                    {range: [6,7], color: "#87c080"},
+                    {range: [7,8], color: "#85bc8b"},
+                    {range: [8,9], color: "#80b586"}
+                ],
+            },
+        }];
+        let gauge_layout = {
+            automargin: true
+        };
+        Plotly.newPlot("gauge", gauges, gauge_layout);
     });
 };
 
